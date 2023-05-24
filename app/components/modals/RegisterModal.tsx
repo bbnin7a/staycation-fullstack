@@ -11,6 +11,7 @@ import Heading from "../Heading";
 import Input from "../input/Input";
 import toast from "react-hot-toast";
 import Button from "../Button";
+import { signIn } from "next-auth/react";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
@@ -78,7 +79,7 @@ const RegisterModal = () => {
         outline
         label="Continue with Google"
         icon={FcGoogle}
-        onClick={() => {}}
+        onClick={() => signIn("google")}
       />
       <div className="text-neutral-500 mt-4 font-light">
         <div className="justify-center flex flex-row items-center gap-2">
