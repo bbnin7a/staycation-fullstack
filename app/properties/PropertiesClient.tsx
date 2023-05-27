@@ -1,0 +1,63 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import Container from "../components/Container";
+import Heading from "../components/Heading";
+import { SafeListing, SafeUser } from "../types";
+import { useCallback, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import ListingCard from "../components/listings/ListingCard";
+
+interface PropertiesClientProps {
+  listings: SafeListing[];
+  currentUser?: SafeUser | null;
+}
+
+const PropertiesClient: React.FC<PropertiesClientProps> = ({
+  listings,
+  currentUser,
+}) => {
+  const router = useRouter();
+  const [deletingId, setDeletingId] = useState("");
+
+  const onCancel = useCallback(
+    (id: string) => {
+      setDeletingId(id);
+      axios
+        .delete(`/api/listings/${id}`)
+        .then(() => {
+          toast.success("Listing cancelled");
+          router.refresh();
+        })
+        .catch((error) => {
+          toast.error(error?.response?.data?.error);
+        })
+        .finally(() => {
+          setDeletingId("");
+        });
+    },
+    [router]
+  );
+
+  return (
+    <Container>
+      <Heading title="Properties" subtitle="List of your properties" />
+      <div className="sub-container">
+        {listings.map((listing) => (
+          <ListingCard
+            key={listing.id}
+            data={listing}
+            actionId={listing.id}
+            onAction={onCancel}
+            disabled={deletingId === listing.id}
+            actionLabel="Cancel property"
+            currentUser={currentUser}
+          />
+        ))}
+      </div>
+    </Container>
+  );
+};
+
+export default PropertiesClient;
